@@ -141,7 +141,9 @@ CORS_ALLOWED_ORIGINS = [
     o.strip()
     for o in os.getenv(
         "CORS_ALLOWED_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080",
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080,"
+        "https://lv-finance-jtgii7ocr-luanv10-s-projects.vercel.app,"
+        "https://lv-finance-jtgii7ocr-luanv10.vercel.app",
     ).split(",")
     if o.strip()
 ]
@@ -150,7 +152,9 @@ CSRF_TRUSTED_ORIGINS = [
     o.strip()
     for o in os.getenv(
         "CSRF_TRUSTED_ORIGINS",
-        "http://localhost:5173,http://localhost:8080",
+        "http://localhost:5173,http://localhost:8080,"
+        "https://lv-finance-jtgii7ocr-luanv10-s-projects.vercel.app,"
+        "https://lv-finance-jtgii7ocr-luanv10.vercel.app",
     ).split(",")
     if o.strip()
 ]
