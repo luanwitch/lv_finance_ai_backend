@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import ChatAPIView, AnalyzeAPIView 
+from .views import AIHealthView, ChatAPIView, AnalyzeAPIView 
 
 
 urlpatterns = [
@@ -15,5 +15,7 @@ urlpatterns = [
         "chat/",
         ChatAPIView.as_view()
     ),
+
+    path("health/", AIHealthView.as_view()),
 
 ]

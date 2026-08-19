@@ -11,6 +11,7 @@ class FinancialInsightAgent(BaseAgent):
     def run(self, context):
 
         memories = MemoryService.get_context(
+            context.user,
             "problemas financeiros hábitos metas e comportamento"
         )
 

@@ -25,6 +25,16 @@ class Transaction(models.Model):
 
     category = models.CharField(
         max_length=60,
+        blank=True,
+        default="",
+    )
+
+    category_fk = models.ForeignKey(
+        "categories.Category",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="transactions",
     )
 
     type = models.CharField(
@@ -46,7 +56,6 @@ class Transaction(models.Model):
         auto_now=True,
     )
 
-    # Adicionando indices
     class Meta:
         ordering = ["-date", "-created_at"]
 
@@ -54,7 +63,6 @@ class Transaction(models.Model):
             models.Index(fields=["user"]),
             models.Index(fields=["date"]),
             models.Index(fields=["type"]),
-            models.Index(fields=["category"]),
         ]
 
     def __str__(self):

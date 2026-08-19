@@ -19,7 +19,7 @@ class MemoryService:
         )
 
     @classmethod
-    def all(cls):
+    def all(cls, user):
 
         return Memory.objects.filter(user=user)
 

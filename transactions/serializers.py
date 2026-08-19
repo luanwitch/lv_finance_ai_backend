@@ -1,9 +1,14 @@
 from rest_framework import serializers
 
 from .models import Transaction
+from categories.serializers import CategorySerializer
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    category_detail = CategorySerializer(
+        source="category_fk", read_only=True
+    )
+
     class Meta:
         model = Transaction
         fields = (
@@ -11,6 +16,8 @@ class TransactionSerializer(serializers.ModelSerializer):
             "title",
             "amount",
             "category",
+            "category_fk",
+            "category_detail",
             "type",
             "date",
             "description",

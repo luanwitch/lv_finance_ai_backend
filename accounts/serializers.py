@@ -34,6 +34,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         
 
 class UserSerializer(serializers.ModelSerializer):
+
+    name = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
@@ -41,5 +44,11 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "email",
-        ]   
-        read_only_fields = fields 
+            "name",
+        ]
+
+    def get_name(self, obj):
+        return (
+            obj.first_name
+            or obj.email.split("@")[0]
+        )
