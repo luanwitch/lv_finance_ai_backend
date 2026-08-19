@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import re
 
 from dotenv import load_dotenv
 
@@ -141,20 +142,20 @@ CORS_ALLOWED_ORIGINS = [
     o.strip()
     for o in os.getenv(
         "CORS_ALLOWED_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080,"
-        "https://lv-finance-jtgii7ocr-luanv10-s-projects.vercel.app,"
-        "https://lv-finance-jtgii7ocr-luanv10.vercel.app",
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080",
     ).split(",")
     if o.strip()
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    re.compile(r"^https://lv-finance-.*\.vercel\.app$"),
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     o.strip()
     for o in os.getenv(
         "CSRF_TRUSTED_ORIGINS",
-        "http://localhost:5173,http://localhost:8080,"
-        "https://lv-finance-jtgii7ocr-luanv10-s-projects.vercel.app,"
-        "https://lv-finance-jtgii7ocr-luanv10.vercel.app",
+        "http://localhost:5173,http://localhost:8080",
     ).split(",")
     if o.strip()
 ]
