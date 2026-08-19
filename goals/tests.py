@@ -89,3 +89,94 @@ class GoalTests(TestCase):
         self.client.force_authenticate(user=None)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class GoalIsolationTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.url = "/api/goals/"
+        self.user_a = User.objects.create_user(
+            email="user_a@example.com", password="password123"
+        )
+        self.user_b = User.objects.create_user(
+            email="user_b@example.com", password="password123"
+        )
+        self.goal_a = Goal.objects.create(
+            user=self.user_a,
+            title="Goal A",
+            target_amount=Decimal("1000.00"),
+        )
+        self.goal_b = Goal.objects.create(
+            user=self.user_b,
+            title="Goal B",
+            target_amount=Decimal("2000.00"),
+        )
+
+    def test_user_a_cannot_see_user_b_goals(self):
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.get(self.url)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["id"], self.goal_a.id)
+
+    def test_user_b_cannot_see_user_a_goals(self):
+        self.client.force_authenticate(user=self.user_b)
+        response = self.client.get(self.url)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["id"], self.goal_b.id)
+
+    def test_user_a_cannot_get_user_b_goal_by_id(self):
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.get(f"{self.url}{self.goal_b.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_b_cannot_get_user_a_goal_by_id(self):
+        self.client.force_authenticate(user=self.user_b)
+        response = self.client.get(f"{self.url}{self.goal_a.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_a_cannot_delete_user_b_goal(self):
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.delete(f"{self.url}{self.goal_b.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(Goal.objects.filter(id=self.goal_b.id).exists())
+
+    def test_user_b_cannot_delete_user_a_goal(self):
+        self.client.force_authenticate(user=self.user_b)
+        response = self.client.delete(f"{self.url}{self.goal_a.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(Goal.objects.filter(id=self.goal_a.id).exists())
+
+    def test_user_a_cannot_update_user_b_goal(self):
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.patch(
+            f"{self.url}{self.goal_b.id}/",
+            {"title": "Hacked"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.goal_b.refresh_from_db()
+        self.assertEqual(self.goal_b.title, "Goal B")
+
+    def test_user_b_cannot_update_user_a_goal(self):
+        self.client.force_authenticate(user=self.user_b)
+        response = self.client.patch(
+            f"{self.url}{self.goal_a.id}/",
+            {"title": "Hacked"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.goal_a.refresh_from_db()
+        self.assertEqual(self.goal_a.title, "Goal A")
+
+    def test_create_goal_associates_to_authenticated_user(self):
+        self.client.force_authenticate(user=self.user_a)
+        data = {
+            "title": "New Goal",
+            "target_amount": "500.00",
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        goal = Goal.objects.get(id=response.data["id"])
+        self.assertEqual(goal.user, self.user_a)
+        self.assertNotEqual(goal.user, self.user_b)

@@ -105,6 +105,105 @@ class TransactionTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+class TransactionIsolationTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.url = "/api/transactions/transactions/"
+        self.user_a = User.objects.create_user(
+            email="user_a@example.com", password="password123"
+        )
+        self.user_b = User.objects.create_user(
+            email="user_b@example.com", password="password123"
+        )
+        self.tx_a = Transaction.objects.create(
+            user=self.user_a,
+            title="Transaction A",
+            amount=Decimal("100.00"),
+            category="salary",
+            type="income",
+            date=timezone.now().date(),
+        )
+        self.tx_b = Transaction.objects.create(
+            user=self.user_b,
+            title="Transaction B",
+            amount=Decimal("200.00"),
+            category="expense",
+            type="expense",
+            date=timezone.now().date(),
+        )
+
+    def test_user_a_cannot_see_user_b_transactions(self):
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.get(self.url)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["id"], self.tx_a.id)
+
+    def test_user_b_cannot_see_user_a_transactions(self):
+        self.client.force_authenticate(user=self.user_b)
+        response = self.client.get(self.url)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["id"], self.tx_b.id)
+
+    def test_user_a_cannot_get_user_b_transaction_by_id(self):
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.get(f"{self.url}{self.tx_b.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_b_cannot_get_user_a_transaction_by_id(self):
+        self.client.force_authenticate(user=self.user_b)
+        response = self.client.get(f"{self.url}{self.tx_a.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_a_cannot_delete_user_b_transaction(self):
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.delete(f"{self.url}{self.tx_b.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(Transaction.objects.filter(id=self.tx_b.id).exists())
+
+    def test_user_b_cannot_delete_user_a_transaction(self):
+        self.client.force_authenticate(user=self.user_b)
+        response = self.client.delete(f"{self.url}{self.tx_a.id}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(Transaction.objects.filter(id=self.tx_a.id).exists())
+
+    def test_user_a_cannot_update_user_b_transaction(self):
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.patch(
+            f"{self.url}{self.tx_b.id}/",
+            {"title": "Hacked"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.tx_b.refresh_from_db()
+        self.assertEqual(self.tx_b.title, "Transaction B")
+
+    def test_user_b_cannot_update_user_a_transaction(self):
+        self.client.force_authenticate(user=self.user_b)
+        response = self.client.patch(
+            f"{self.url}{self.tx_a.id}/",
+            {"title": "Hacked"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.tx_a.refresh_from_db()
+        self.assertEqual(self.tx_a.title, "Transaction A")
+
+    def test_create_transaction_associates_to_authenticated_user(self):
+        self.client.force_authenticate(user=self.user_a)
+        data = {
+            "title": "New Transaction",
+            "amount": "50.00",
+            "type": "expense",
+            "date": str(timezone.now().date()),
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        tx = Transaction.objects.get(id=response.data["id"])
+        self.assertEqual(tx.user, self.user_a)
+        self.assertNotEqual(tx.user, self.user_b)
+
+
 class TransactionCategoryFKTests(TestCase):
 
     def setUp(self):
