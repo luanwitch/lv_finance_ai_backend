@@ -19,14 +19,20 @@ if not SECRET_KEY:
 
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in os.getenv(
-        "ALLOWED_HOSTS",
-        "localhost,127.0.0.1,lv-finance-ai-backend.onrender.com",
-    ).split(",")
-    if h.strip()
-]
+ALLOWED_HOSTS = list(
+    dict.fromkeys(
+        h.strip()
+        for h in os.getenv(
+            "ALLOWED_HOSTS",
+            "localhost,127.0.0.1",
+        ).split(",")
+        if h.strip()
+    )
+)
+
+_render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
+if _render_hostname and _render_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(_render_hostname)
 
 # ---------------------------------------------------------------------------
 # Application definition
