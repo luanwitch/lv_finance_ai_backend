@@ -10,7 +10,18 @@ class GoalSerializer(serializers.ModelSerializer):
 
         model = Goal 
 
-        fields = "__all__"
+        fields = (
+            "id",
+            "title",
+            "description",
+            "target_amount",
+            "current_amount",
+            "deadline",
+            "status",
+            "created_at",
+            "updated_at",
+            "progress",
+        )
 
         read_only_fields = (
             "user",
