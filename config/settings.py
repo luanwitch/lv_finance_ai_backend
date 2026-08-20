@@ -25,6 +25,8 @@ ALLOWED_HOSTS = list(
         for h in os.getenv(
             "ALLOWED_HOSTS",
             "localhost,127.0.0.1,lv-finance-ai-backend.onrender.com",
+            "localhost",
+            "127.0.0.1",
         ).split(",")
         if h.strip()
     )
