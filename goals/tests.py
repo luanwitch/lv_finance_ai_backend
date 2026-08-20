@@ -91,6 +91,120 @@ class GoalTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
+class GoalContributionTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.url = "/api/goals/"
+        self.user = User.objects.create_user(
+            email="contrib@example.com",
+            password="strongpassword123",
+        )
+        self.client.force_authenticate(user=self.user)
+
+    def _create_goal(self, target="10000.00", current="0.00"):
+        return self.client.post(
+            self.url,
+            {"title": "Contrib Goal", "target_amount": target, "current_amount": current},
+            format="json",
+        )
+
+    def _patch(self, goal_id, data):
+        return self.client.patch(
+            f"{self.url}{goal_id}/", data, format="json"
+        )
+
+    def test_contribute_100(self):
+        goal = self._create_goal()
+        goal_id = goal.data["id"]
+        response = self._patch(goal_id, {"current_amount": "100.00"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["current_amount"], "100.00")
+
+    def test_contribute_100_as_integer(self):
+        goal = self._create_goal()
+        goal_id = goal.data["id"]
+        response = self._patch(goal_id, {"current_amount": 100})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_contribute_100_as_float(self):
+        goal = self._create_goal()
+        goal_id = goal.data["id"]
+        response = self._patch(goal_id, {"current_amount": 100.0})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_contribute_with_decimal(self):
+        goal = self._create_goal()
+        goal_id = goal.data["id"]
+        response = self._patch(goal_id, {"current_amount": "150.50"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["current_amount"], "150.50")
+
+    def test_contribute_too_many_decimals_rejected(self):
+        goal = self._create_goal()
+        goal_id = goal.data["id"]
+        response = self._patch(goal_id, {"current_amount": 100.001})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_contribute_zero_rejected(self):
+        goal = self._create_goal()
+        goal_id = goal.data["id"]
+        response = self._patch(goal_id, {"current_amount": "0.00"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_contribute_negative_rejected_by_validator(self):
+        goal = self._create_goal()
+        goal_id = goal.data["id"]
+        response = self._patch(goal_id, {"current_amount": "-100.00"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_contribute_exceeds_target(self):
+        goal = self._create_goal(target="500.00")
+        goal_id = goal.data["id"]
+        response = self._patch(goal_id, {"current_amount": "600.00"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["current_amount"], "600.00")
+
+    def test_nonexistent_goal_returns_404(self):
+        response = self._patch(99999, {"current_amount": "100.00"})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_contribute_then_progress_updates(self):
+        goal = self._create_goal(target="1000.00")
+        goal_id = goal.data["id"]
+        self._patch(goal_id, {"current_amount": "500.00"})
+        response = self.client.get(f"{self.url}{goal_id}/")
+        self.assertEqual(response.data["progress"], 50.0)
+
+    def test_progress_at_100_percent(self):
+        goal = self._create_goal(target="500.00")
+        goal_id = goal.data["id"]
+        self._patch(goal_id, {"current_amount": "500.00"})
+        response = self.client.get(f"{self.url}{goal_id}/")
+        self.assertEqual(response.data["progress"], 100.0)
+
+    def test_progress_zero_target(self):
+        goal = self._create_goal(target="0.00")
+        goal_id = goal.data["id"]
+        response = self.client.get(f"{self.url}{goal_id}/")
+        self.assertEqual(response.data["progress"], 0)
+
+    def test_amounts_returned_as_strings(self):
+        goal = self._create_goal(target="5000.00")
+        goal_id = goal.data["id"]
+        response = self.client.get(f"{self.url}{goal_id}/")
+        self.assertIsInstance(response.data["current_amount"], str)
+        self.assertIsInstance(response.data["target_amount"], str)
+
+    def test_create_goal_with_integer_amounts(self):
+        response = self.client.post(
+            self.url,
+            {"title": "Int Goal", "target_amount": 5000},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
 class GoalIsolationTests(TestCase):
 
     def setUp(self):
