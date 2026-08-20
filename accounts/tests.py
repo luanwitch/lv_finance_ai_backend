@@ -87,6 +87,33 @@ class LoginTests(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_login_empty_body_returns_400(self):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_login_missing_password_returns_400(self):
+        response = self.client.post(self.url, {"email": "test@example.com"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_login_missing_email_returns_400(self):
+        response = self.client.post(self.url, {"password": "strongpassword123"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_login_never_returns_500(self):
+        for data in [
+            {},
+            {"email": "test@example.com"},
+            {"password": "strongpassword123"},
+            {"email": "test@example.com", "password": "wrong"},
+            {"email": "nobody@example.com", "password": "x"},
+        ]:
+            response = self.client.post(self.url, data)
+            self.assertNotEqual(
+                response.status_code,
+                status.HTTP_500_INTERNAL_SERVER_ERROR,
+                f"500 on payload {data}",
+            )
+
 
 class ProfileTests(TestCase):
 

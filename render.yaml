@@ -16,12 +16,18 @@ services:
         sync: false
       - key: CSRF_TRUSTED_ORIGINS
         sync: false
+      - key: DATABASE_URL
+        sync: false
       - key: AI_PROVIDER
         value: "ollama"
       - key: AUTHENTICATION_API_KEY
         sync: false
       - key: SECURE_SSL_REDIRECT
         value: "True"
+      - key: LOG_LEVEL
+        value: "INFO"
+      - key: DJANGO_LOG_LEVEL
+        value: "INFO"
     env: python
 
   - type: pserv
