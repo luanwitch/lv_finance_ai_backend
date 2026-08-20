@@ -33,8 +33,8 @@ USERS = [
         "password": "Admin2@123456",
         "first_name": "Admin2",
         "last_name": "LV Finance",
-        "is_staff": False,
-        "is_superuser": False,
+        "is_staff": True,
+        "is_superuser": True,
     },
     {
         "email": "teste2@lvfinance.com",
@@ -56,8 +56,8 @@ class Command(BaseCommand):
 
         for data in USERS:
             email = data["email"]
-            password = data.pop("password")
-            extra_fields = data
+            password = data["password"]
+            extra_fields = {k: v for k, v in data.items() if k != "password"}
 
             user, created = User.objects.get_or_create(
                 email=email,
