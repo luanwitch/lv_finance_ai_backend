@@ -8,6 +8,10 @@ from django.db.models import Sum
 
 from .models import Transaction
 from .serializers import TransactionSerializer
+from gamification.services import (
+    EVENT_TRANSACTION_CREATED,
+    handle_event,
+)
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -22,6 +26,12 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+        handle_event(
+            EVENT_TRANSACTION_CREATED,
+            self.request.user,
+            serializer.instance,
+        )
 
     @action(
         detail=False,

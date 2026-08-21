@@ -17,6 +17,9 @@ env/
 
 # Database
 db.sqlite3
+dev.sqlite3
+tmp_validation.sqlite3
+*.sqlite3
 
 # Static files
 staticfiles/

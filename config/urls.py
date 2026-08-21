@@ -40,5 +40,6 @@ urlpatterns = [
     path("api/transactions/", include("transactions.urls")),
     path("api/categories/", include("categories.urls")),
     path("api/goals/", include("goals.urls")),
+    path("api/gamification/", include("gamification.urls")),
     path("api/ai/", include("ai.urls")),
 ]

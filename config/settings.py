@@ -2,6 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 import os
 import re
+import sys
 
 from dotenv import load_dotenv
 
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     "transactions",
     "goals",
     "ai",
+    "gamification",
 ]
 
 MIDDLEWARE = [
@@ -86,11 +88,30 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # ---------------------------------------------------------------------------
 # Database
+#
+# REGRA DE OURO: TESTE AUTOMATIZADO ≠ DESENVOLVIMENTO MANUAL
+#
+# - Desenvolvimento manual (navegador, celular, demonstrações):
+#     -> dev.sqlite3 (PERSISTENTE - NUNCA apagar automaticamente)
+# - Testes automatizados (`manage.py test`):
+#     -> SQLite EM MEMÓRIA, sempre. Nunca toca dev.sqlite3 e nunca
+#        cria bancos de teste no PostgreSQL/Neon, mesmo que DATABASE_URL
+#        esteja definida no ambiente ou no .env.
+# - Produção (Render etc.): DATABASE_URL apontando para o Postgres.
 # ---------------------------------------------------------------------------
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_URL:
+RUNNING_TESTS = "test" in sys.argv
+
+if RUNNING_TESTS:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    }
+elif DATABASE_URL:
     import dj_database_url
 
     DATABASES = {
@@ -104,7 +125,7 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
+            "NAME": BASE_DIR / "dev.sqlite3",
         }
     }
 
@@ -267,9 +288,13 @@ AUTHENTICATION_API_KEY = os.getenv("AUTHENTICATION_API_KEY", "")
 
 # ---------------------------------------------------------------------------
 # HTTPS / Security (production only)
+#
+# Durante `manage.py test` o bloco é ignorado: sem isso o
+# SecurityMiddleware redireciona (301) todas as requisições http:// do
+# cliente de testes para https://, quebrando a suíte inteira.
 # ---------------------------------------------------------------------------
 
-if not DEBUG:
+if not DEBUG and not RUNNING_TESTS:
     SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True").lower() == "true"
     SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
