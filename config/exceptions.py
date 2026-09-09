@@ -2,7 +2,6 @@ import logging
 
 from rest_framework.views import exception_handler
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -18,8 +17,8 @@ def custom_exception_handler(exc, context):
         exc_info=exc,
     )
 
-    from rest_framework.response import Response
     from rest_framework import status
+    from rest_framework.response import Response
 
     return Response(
         {"detail": "Erro interno do servidor."},

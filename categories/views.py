@@ -1,12 +1,14 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Category
-from .serializers import CategorySerializer
 from gamification.services import (
     EVENT_CATEGORY_CREATED,
     handle_event,
 )
+
+from .models import Category
+from .serializers import CategorySerializer
+
 
 # Create your views here.
 class CategoryViewSet(viewsets.ModelViewSet):

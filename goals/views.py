@@ -1,14 +1,15 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Goal
-from .serializers import GoalSerializer
 from gamification.services import (
     EVENT_GOAL_COMPLETED,
     EVENT_GOAL_CREATED,
     EVENT_GOAL_UPDATED,
     handle_event,
 )
+
+from .models import Goal
+from .serializers import GoalSerializer
 
 # Create your views here.
 

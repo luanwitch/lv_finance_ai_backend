@@ -7,8 +7,6 @@ from rest_framework.views import APIView
 from .models import (
     Achievement,
     Challenge,
-    UserAchievement,
-    UserChallenge,
     XPTransaction,
 )
 from .rules import level_progress

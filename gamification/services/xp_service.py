@@ -8,8 +8,8 @@ garante a unicidade mesmo sob chamadas concorrentes.
 import logging
 
 from django.db import IntegrityError
-from django.db.models import F
 from django.db import transaction as db_transaction
+from django.db.models import F
 
 from ..models import UserGamification, XPTransaction
 

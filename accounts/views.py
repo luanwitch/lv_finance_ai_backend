@@ -204,7 +204,10 @@ class ResendVerificationView(APIView):
 
         return Response(
             {
-                "detail": "Se o e-mail estiver cadastrado, voce recebera um novo link de confirmacao."
+                "detail": (
+                    "Se o e-mail estiver cadastrado, voce recebera um novo "
+                    "link de confirmacao."
+                )
             },
             status=status.HTTP_200_OK,
         )

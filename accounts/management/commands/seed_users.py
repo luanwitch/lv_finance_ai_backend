@@ -108,10 +108,10 @@ class Command(BaseCommand):
             else:
                 needs_update = False
                 for field, value in extra_fields.items():
-                    if field in ("is_staff", "is_superuser", "is_verified") and getattr(user, field) != value:
-                        setattr(user, field, value)
-                        needs_update = True
-                    elif field in ("first_name", "last_name") and getattr(user, field, None) != value:
+                    current = getattr(user, field, None)
+                    is_flag = field in ("is_staff", "is_superuser", "is_verified")
+                    is_name = field in ("first_name", "last_name")
+                    if (is_flag and current != value) or (is_name and current != value):
                         setattr(user, field, value)
                         needs_update = True
 

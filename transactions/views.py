@@ -1,17 +1,16 @@
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-
-from rest_framework.decorators import action
-
-from rest_framework.response import Response
 from django.db.models import Sum
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from .models import Transaction
-from .serializers import TransactionSerializer
 from gamification.services import (
     EVENT_TRANSACTION_CREATED,
     handle_event,
 )
+
+from .models import Transaction
+from .serializers import TransactionSerializer
 
 
 class TransactionViewSet(viewsets.ModelViewSet):

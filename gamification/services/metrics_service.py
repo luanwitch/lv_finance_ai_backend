@@ -159,7 +159,7 @@ def _current_month_metrics(user, today):
         Q(category_fk__isnull=False) | ~Q(category="")
     ).count()
 
-    ratio = int(round((categorized / total) * 100)) if total > 0 else 0
+    ratio = round((categorized / total) * 100) if total > 0 else 0
 
     return {
         "current_month_transactions": total,

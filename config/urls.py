@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django.urls import path, include
-from django.http import JsonResponse
 from django.db import connection
-from django.views.defaults import bad_request, server_error
+from django.http import JsonResponse
+from django.urls import include, path
 
 
 def json_bad_request(request, exception):
@@ -27,7 +26,13 @@ def health_check(request):
     except Exception:
         db_ok = False
     status_code = 200 if db_ok else 503
-    return JsonResponse({"status": "ok" if db_ok else "error", "database": "ok" if db_ok else "error"}, status=status_code)
+    return JsonResponse(
+        {
+            "status": "ok" if db_ok else "error",
+            "database": "ok" if db_ok else "error",
+        },
+        status=status_code,
+    )
 
 
 handler400 = json_bad_request

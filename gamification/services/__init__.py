@@ -21,11 +21,11 @@ from .gamification_service import (
 )
 
 __all__ = [
-    "handle_event",
-    "run_periodic_checks",
     "EVENT_CATEGORY_CREATED",
     "EVENT_GOAL_COMPLETED",
     "EVENT_GOAL_CREATED",
     "EVENT_GOAL_UPDATED",
     "EVENT_TRANSACTION_CREATED",
+    "handle_event",
+    "run_periodic_checks",
 ]

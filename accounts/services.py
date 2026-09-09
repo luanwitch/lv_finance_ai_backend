@@ -64,7 +64,7 @@ def verify_verification_token(raw_token):
 
 
 def send_verification_email(user, raw_token):
-    verify_url = "{0}/verify-email?token={1}".format(
+    verify_url = "{}/verify-email?token={}".format(
         settings.FRONTEND_URL.rstrip("/"),
         raw_token,
     )
@@ -140,7 +140,7 @@ def mark_password_reset_token_used(raw_token):
 
 
 def send_password_reset_email(user, raw_token):
-    reset_url = "{0}/reset-password?token={1}".format(
+    reset_url = "{}/reset-password?token={}".format(
         settings.FRONTEND_URL.rstrip("/"),
         raw_token,
     )

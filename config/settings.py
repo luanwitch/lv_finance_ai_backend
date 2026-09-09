@@ -1,8 +1,7 @@
+import os
+import sys
 from datetime import timedelta
 from pathlib import Path
-import os
-import re
-import sys
 
 from dotenv import load_dotenv
 

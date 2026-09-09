@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import Goal
 
+
 class GoalSerializer(serializers.ModelSerializer):
 
     progress = serializers.ReadOnlyField()
