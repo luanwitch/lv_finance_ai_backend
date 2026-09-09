@@ -28,6 +28,24 @@ services:
         value: "INFO"
       - key: DJANGO_LOG_LEVEL
         value: "INFO"
+      - key: EMAIL_BACKEND
+        sync: false
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: EMAIL_USE_TLS
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: EMAIL_VERIFICATION_TOKEN_LIFETIME_HOURS
+        value: "24"
     env: python
 
   - type: pserv

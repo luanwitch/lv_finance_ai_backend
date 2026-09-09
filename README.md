@@ -56,3 +56,42 @@ Todos os arquivos `*.sqlite3` estão no `.gitignore` — bancos locais não vão
 - `goals/` (CRUD)
 - `gamification/profile/`, `gamification/achievements/`, `gamification/challenges/` (somente leitura)
 - `health/` (checa conexão com o banco ativo)
+
+## Validação de qualidade
+
+### Backend (Django)
+
+Ferramentas de quality são de **desenvolvimento** (nunca vão para produção):
+
+```powershell
+pip install -r requirements-dev.txt   # instala o Ruff (uma vez por ambiente)
+```
+
+Comandos oficiais de validação:
+
+```powershell
+ruff check .                                  # lint + qualidade do código
+python manage.py test                         # suíte de testes (SQLite em memória)
+python manage.py check                        # checagem de configuração do Django
+python manage.py makemigrations --check --dry-run   # nenhuma migration pendente
+```
+
+> Atalho para o executável do Ruff dentro da venv: `venv\Scripts\ruff.exe check .`
+> Se um comando estiver fora do `PATH`, use o caminho da venv correspondente
+> (`venv\Scripts\python.exe`).
+
+Configuração do Ruff: `pyproject.toml` (imports, pyupgrade, bugbear, simplificação;
+migrations são excluídas por serem código gerado; `RUF012` é ignorado por conflitar
+com padrões idiomáticos do Django/DRF, ex. `permission_classes` e `Meta`).
+
+### Frontend (TanStack Start — pasta irmã `lv_finance_ia/lv-finance-ia`)
+
+```powershell
+npm run lint        # ESLint (configuração existente em eslint.config.js)
+npm run typecheck   # tsc --noEmit
+npm run test        # Vitest
+npm run build       # Vite build (client + SSR + Nitro)
+```
+
+> Antes de validar, instale as dependências com `npm install` (ou `bun install`,
+> se usá-los) na primeira vez.

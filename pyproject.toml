@@ -1,0 +1,25 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = [
+    "*/migrations/*",
+    "dev.sqlite3",
+    "staticfiles",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "RUF", # ruff-specific
+]
+ignore = [
+    # RUF012: atributos mutáveis de classe são idiomáticos no Django/DRF
+    # (permission_classes, Meta.ordering, Meta.indexes, serializer fields).
+    "RUF012",
+]
