@@ -8,7 +8,6 @@ class FinancialInsightAgent(BaseAgent):
     name = "financial_insight"
     title = "Analista Financeiro IA"
 
-
     def run(self, context):
 
         memories = MemoryService.get_context(

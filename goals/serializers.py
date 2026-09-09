@@ -7,9 +7,9 @@ class GoalSerializer(serializers.ModelSerializer):
 
     progress = serializers.ReadOnlyField()
 
-    class Meta: 
+    class Meta:
 
-        model = Goal 
+        model = Goal
 
         fields = (
             "id",

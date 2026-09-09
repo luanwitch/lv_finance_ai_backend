@@ -6,7 +6,7 @@ urlpatterns = [
 
     path(
         "analyze/",
-         AnalyzeAPIView.as_view(),
+        AnalyzeAPIView.as_view(),
         name="ai-analysis"
     ),
 

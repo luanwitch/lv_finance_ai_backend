@@ -24,7 +24,6 @@ class MemoryService:
 
         return Memory.objects.filter(user=user)
 
-
     @classmethod
     def search(cls, user, query, limit=3):
 
@@ -55,8 +54,8 @@ class MemoryService:
 
         return results[:limit]
 
-    
     # Criando méthodo de contexto::
+
     @classmethod
     def get_context(cls, user, query):
 
@@ -66,4 +65,3 @@ class MemoryService:
             f"- [{m['type']}] {m['text']}"
             for m in memories
         )
-        

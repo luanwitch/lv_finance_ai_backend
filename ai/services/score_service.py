@@ -1,6 +1,5 @@
 
 
-
 class ScoreCalculator:
 
     def calculate(self, context):

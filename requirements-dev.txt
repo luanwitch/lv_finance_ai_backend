@@ -1,3 +1,4 @@
 # Ferramentas de qualidade de codigo (nao vao para producao).
 # Instale com: pip install -r requirements-dev.txt
 ruff==0.16.6
+flake8==7.3.0

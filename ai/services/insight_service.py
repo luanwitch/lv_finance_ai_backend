@@ -17,7 +17,6 @@ class InsightService:
         print("=" * 80)
         print(answer)
         print("=" * 80)
-       
 
         return {
 

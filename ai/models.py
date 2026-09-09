@@ -4,6 +4,8 @@ from django.db import models
 User = get_user_model()
 
 # Create your models here.
+
+
 class Memory(models.Model):
 
     MEMORY_TYPES = [
@@ -44,6 +46,7 @@ class Memory(models.Model):
 
         return self.content[:50]
 
+
 class ChatMessage(models.Model):
 
     user = models.ForeignKey(
@@ -66,4 +69,4 @@ class ChatMessage(models.Model):
         ordering = ["created_at"]
 
     def __str__(self):
-        return f"{self.role}: {self.message[:40]}"    
+        return f"{self.role}: {self.message[:40]}"

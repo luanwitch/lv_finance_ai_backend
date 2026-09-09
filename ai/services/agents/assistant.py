@@ -28,7 +28,6 @@ class FinancialAssistantAgent(BaseAgent):
             elif transaction.is_expense:
                 total_expense += transaction.amount
 
-       
         balance = total_income - total_expense
 
         memory_context = MemoryService.get_context(
@@ -37,7 +36,6 @@ class FinancialAssistantAgent(BaseAgent):
         )
 
         print(memory_context)
-        
 
         return self.response(
             data={

@@ -22,7 +22,6 @@ class AIService:
         "deepseek": DeepSeekProvider,
     }
 
-
     @classmethod
     def provider(cls):
 
@@ -38,7 +37,6 @@ class AIService:
         )
 
         return provider_class()
-
 
     @classmethod
     def generate(cls, prompt):

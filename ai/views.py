@@ -53,4 +53,4 @@ class AIHealthView(APIView):
         return Response({
             "status": "online",
             "service": "LV Finance AI"
-        })    
+        })

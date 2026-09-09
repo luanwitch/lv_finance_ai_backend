@@ -234,7 +234,6 @@ REGRAS FINAIS:
 - Não invente ferramentas.
 """
 
-
         answer = OllamaService().generate(prompt)
 
         # Remove bloco markdown caso Ollama retorne ```json
@@ -244,7 +243,6 @@ REGRAS FINAIS:
             .replace("```", "")
             .strip()
         )
-
 
         try:
 
@@ -256,9 +254,7 @@ REGRAS FINAIS:
                 "answer": answer
             }
 
-
         tool_result = None
-
 
         if data.get("tool"):
 
@@ -268,7 +264,6 @@ REGRAS FINAIS:
                 data["data"]
             )
 
-
         return {
             "answer": data.get(
                 "answer",
@@ -276,4 +271,3 @@ REGRAS FINAIS:
             ),
             "tool_result": tool_result
         }
-

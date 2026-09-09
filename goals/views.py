@@ -13,6 +13,7 @@ from .serializers import GoalSerializer
 
 # Create your views here.
 
+
 class GoalViewSet(viewsets.ModelViewSet):
 
     serializer_class = GoalSerializer

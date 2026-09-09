@@ -25,12 +25,12 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
 
-       serializer.save(
-           user=self.request.user
-       )
+        serializer.save(
+            user=self.request.user
+        )
 
-       handle_event(
-           EVENT_CATEGORY_CREATED,
-           self.request.user,
-           serializer.instance,
-       )
+        handle_event(
+            EVENT_CATEGORY_CREATED,
+            self.request.user,
+            serializer.instance,
+        )
