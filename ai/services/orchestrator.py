@@ -1,8 +1,7 @@
+from ai.services.context_builder import ContextBuilder
+from ai.services.insight_service import InsightService
 from ai.services.registry import AGENTS
 from ai.services.score_service import ScoreCalculator
-from ai.services.insight_service import InsightService
-from ai.services.context import AIContext
-from ai.services.context_builder import ContextBuilder
 
 
 class AIOrchestrator:

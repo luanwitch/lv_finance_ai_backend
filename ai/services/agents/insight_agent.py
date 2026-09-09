@@ -1,5 +1,6 @@
-from .base import BaseAgent
 from ai.memory.memory_service import MemoryService
+
+from .base import BaseAgent
 
 
 class FinancialInsightAgent(BaseAgent):

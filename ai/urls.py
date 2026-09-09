@@ -1,7 +1,6 @@
 from django.urls import path
 
-from .views import AIHealthView, ChatAPIView, AnalyzeAPIView 
-
+from .views import AIHealthView, AnalyzeAPIView, ChatAPIView
 
 urlpatterns = [
 

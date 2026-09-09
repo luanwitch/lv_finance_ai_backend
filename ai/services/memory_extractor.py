@@ -1,5 +1,6 @@
 from ai.memory.memory_service import MemoryService
 
+
 class MemoryExtractor:
 
     KEYWORDS = {

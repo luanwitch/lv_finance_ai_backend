@@ -1,12 +1,10 @@
 from ai.services.context import AIContext
+from categories.models import Category
+from goals.models import Goal
 
 # Ajuste os imports conforme seus apps
 from transactions.models import Transaction
-from goals.models import Goal
-from categories.models import Category
 
-from .agents.invoice import InvoiceAgent
-from .agents.debt import DebtAnalyzerAgent
 
 class ContextBuilder:
 

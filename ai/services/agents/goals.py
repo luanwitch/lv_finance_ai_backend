@@ -1,5 +1,6 @@
 from .base import BaseAgent
 
+
 class GoalsAgent(BaseAgent):
 
     name = "goals"

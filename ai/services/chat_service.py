@@ -1,5 +1,7 @@
 import json
 
+from rest_framework.exceptions import ValidationError
+
 from ai.memory.memory_service import MemoryService
 from ai.services.memory_extractor import MemoryExtractor
 from ai.services.ollama_service import OllamaService
@@ -11,6 +13,11 @@ class ChatService:
 
     def chat(self, user, message):
 
+        message = message.strip()
+
+        if not message:
+            raise ValidationError({"message": "A mensagem não pode estar vazia."})
+
         # Aprende antes de responder
         MemoryExtractor.process(
             user,
@@ -18,8 +25,13 @@ class ChatService:
         )
 
         # Busca memórias relacionadas
-        memory_context = ""
-        
+        try:
+            memory_context = MemoryService.get_context(user, message)
+        except Exception:
+            # Embedding offline (ex.: Ollama local indisponível): sem memória
+            # conectada o chat continua funcionando com os dados financeiros.
+            memory_context = ""
+
         transactions = Transaction.objects.filter(
             user=user
         )
@@ -223,19 +235,7 @@ REGRAS FINAIS:
 """
 
 
-        print("======== MENSAGEM RECEBIDA ========")
-        print(message)
-
-        print("======== PROMPT ENVIADO PARA IA ========")
-        print(prompt)
-
-        print("====================================")
         answer = OllamaService().generate(prompt)
-
-        print("=" * 80)
-        print(prompt)
-        print("=" * 80)
-
 
         # Remove bloco markdown caso Ollama retorne ```json
         clean_answer = (
@@ -257,10 +257,6 @@ REGRAS FINAIS:
             }
 
 
-        print("TOOL RECEBIDA:")
-        print(data)
-
-
         tool_result = None
 
 
@@ -271,9 +267,6 @@ REGRAS FINAIS:
                 data["tool"],
                 data["data"]
             )
-
-            print("RESULTADO DA TOOL:")
-            print(tool_result)
 
 
         return {

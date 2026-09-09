@@ -1,5 +1,6 @@
 from .base import BaseAgent
 
+
 class CoachAgent(BaseAgent):
 
     name = "coach"

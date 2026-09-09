@@ -23,13 +23,11 @@ class BudgetPlannerAgent(BaseAgent):
 
         balance = total_income - total_expense
 
-        if total_income > 0:
-            expense_percent = round(
-                (total_expense / total_income) * 100,
-                2
-            )
-        else:
-            expense_percent = 0
+        expense_percent = (
+            round((total_expense / total_income) * 100, 2)
+            if total_income > 0
+            else 0
+        )
 
         return self.response(
             data={

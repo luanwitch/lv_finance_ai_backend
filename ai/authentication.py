@@ -5,6 +5,9 @@ from rest_framework.exceptions import AuthenticationFailed
 
 class AIAuthentication(BaseAuthentication):
 
+    def authenticate_header(self, request):
+        return "APIKey"
+
     def authenticate(self, request):
 
         api_key = request.headers.get("X-API-Key")

@@ -1,7 +1,4 @@
-from decimal import Decimal
 
-from transactions.models import Transaction
-from goals.models import Goal
 
 
 class ScoreCalculator:

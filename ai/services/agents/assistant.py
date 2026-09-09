@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-from transactions.models import Transaction
 from ai.memory.memory_service import MemoryService
+from transactions.models import Transaction
 
 from .base import BaseAgent
 

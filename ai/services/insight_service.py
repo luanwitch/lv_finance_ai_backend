@@ -1,5 +1,5 @@
-from ai.services.prompt_builder import PromptBuilder
 from ai.services.ollama_service import OllamaService
+from ai.services.prompt_builder import PromptBuilder
 
 
 class InsightService:

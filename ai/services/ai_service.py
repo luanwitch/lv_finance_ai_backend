@@ -1,10 +1,10 @@
 from django.conf import settings
 
+from ai.providers.claude_provider import ClaudeProvider
+from ai.providers.deepseek_provider import DeepSeekProvider
+from ai.providers.gemini_provider import GeminiProvider
 from ai.providers.ollama_provider import OllamaProvider
 from ai.providers.openai_provider import OpenAIProvider
-from ai.providers.claude_provider import ClaudeProvider
-from ai.providers.gemini_provider import GeminiProvider
-from ai.providers.deepseek_provider import DeepSeekProvider
 
 
 class AIService:

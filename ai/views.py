@@ -1,11 +1,13 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
+from rest_framework.views import APIView
 
 from ai.authentication import AIAuthentication
 
-from .services.orchestrator import AIOrchestrator
+from .serializers import ChatSerializer
 from .services.chat_service import ChatService
+from .services.orchestrator import AIOrchestrator
 
 
 class AnalyzeAPIView(APIView):
@@ -24,10 +26,15 @@ class AnalyzeAPIView(APIView):
 class ChatAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "ai_chat"
 
     def post(self, request):
 
-        message = request.data.get("message", "")
+        serializer = ChatSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        message = serializer.validated_data["message"]
 
         response = ChatService().chat(
             request.user,

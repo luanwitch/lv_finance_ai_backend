@@ -1,6 +1,7 @@
-from transactions.models import Transaction
-from categories.models import Category
 from django.utils import timezone
+
+from categories.models import Category
+from transactions.models import Transaction
 
 
 class CreateTransactionTool:

@@ -1,7 +1,8 @@
-from ai.embeddings.embedding_service import EmbeddingService
 from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
+
+from ai.embeddings.embedding_service import EmbeddingService
 from ai.models import Memory
+
 
 class MemoryService:
 
