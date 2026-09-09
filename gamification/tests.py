@@ -9,7 +9,6 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from categories.models import Category
-from goals.models import Goal
 from transactions.models import Transaction
 
 from .models import (
@@ -129,8 +128,11 @@ class XPAwardTests(GamificationTestBase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         profile = get_profile(self.user)
-        # +50 primeira transação e +25 conquista "primeira transação"
-        self.assertEqual(profile.total_xp, 75)
+        # +50 primeira transação, +25 conquista "primeira transação" e
+        # +25 conquista "primeira categoria" (o serializer resolve o slug
+        # da categoria, criando a categoria canônica do usuário de forma
+        # idempotente — alinhado à migração 0004 de transactions).
+        self.assertEqual(profile.total_xp, 100)
         self.assertTrue(
             XPTransaction.objects.filter(
                 user=self.user, event_type="first_transaction"
@@ -148,8 +150,8 @@ class XPAwardTests(GamificationTestBase):
         self._create_transaction(title="T3")
 
         profile = get_profile(self.user)
-        # 50 + 25 (conquista) + 5 + 5
-        self.assertEqual(profile.total_xp, 85)
+        # 100 (bonus + conquistas) + 5 + 5
+        self.assertEqual(profile.total_xp, 110)
 
     def test_deleted_transactions_do_not_allow_refarm_first_bonus(self):
         self._create_transaction(title="T1")
@@ -158,10 +160,11 @@ class XPAwardTests(GamificationTestBase):
         self._create_transaction(title="T1 novamente")
 
         profile = get_profile(self.user)
-        # Nada além dos 75 originais: bônus de primeira transação é
-        # único (idempotência por chave) e o ramo "count == 1" não
+        # Nada além dos 100 originais: bônus de primeira transação é
+        # único (idempotência por chave), a conquista de primeira
+        # categoria já está desbloqueada e o ramo "count == 1" não
         # concede o XP regular.
-        self.assertEqual(profile.total_xp, 75)
+        self.assertEqual(profile.total_xp, 100)
 
     def test_duplicate_event_does_not_double_award(self):
         # Duas transações: a primeira passa pelo pipeline (como na

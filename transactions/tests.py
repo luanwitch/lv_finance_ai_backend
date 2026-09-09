@@ -251,3 +251,52 @@ class TransactionCategoryFKTests(TestCase):
         tx = response.data[0]
         self.assertIn("category_detail", tx)
         self.assertEqual(tx["category_detail"]["name"], "Transporte")
+
+    def test_unknown_category_returns_400(self):
+        data = {
+            "title": "Item",
+            "amount": "10.00",
+            "category": "categoria-inexistente",
+            "type": "expense",
+            "date": str(timezone.now().date()),
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("category", response.data)
+
+    def test_category_slug_resolves_category_fk(self):
+        data = {
+            "title": "Mercado",
+            "amount": "80.00",
+            "category": "alimentacao",
+            "type": "expense",
+            "date": str(timezone.now().date()),
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        tx = Transaction.objects.get(id=response.data["id"])
+        self.assertIsNotNone(tx.category_fk)
+        self.assertEqual(tx.category_fk.name, "Alimentação")
+
+    def test_category_fk_of_another_user_is_rejected(self):
+        other = User.objects.create_user(
+            email="othercat@example.com",
+            password="strongpassword123",
+        )
+        other_category = Category.objects.create(
+            user=other,
+            name="Outra",
+            icon="x",
+            type="expense",
+        )
+
+        data = {
+            "title": "Item",
+            "amount": "10.00",
+            "category_fk": other_category.id,
+            "type": "expense",
+            "date": str(timezone.now().date()),
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
