@@ -50,6 +50,51 @@ class RegisterTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class RegisterRateLimitTests(TestCase):
+
+    REGISTER_LIMIT = 10
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        self.client = APIClient()
+        self.url = "/api/auth/register/"
+        cache.clear()
+
+    def tearDown(self):
+        from django.core.cache import cache
+
+        cache.clear()
+
+    def test_register_is_rate_limited(self):
+        from django.core import mail
+
+        mail.outbox = []
+
+        for i in range(self.REGISTER_LIMIT):
+            response = self.client.post(
+                self.url,
+                {
+                    "first_name": "Teste",
+                    "last_name": "User",
+                    "email": f"user{i}@example.com",
+                    "password": "strongpassword123",
+                },
+            )
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.post(
+            self.url,
+            {
+                "first_name": "Teste",
+                "last_name": "User",
+                "email": "overflow@example.com",
+                "password": "strongpassword123",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+
 class LoginTests(TestCase):
 
     def setUp(self):
@@ -59,6 +104,7 @@ class LoginTests(TestCase):
             email="test@example.com",
             password="strongpassword123",
             first_name="Teste",
+            is_verified=True,
         )
 
     def test_login_success(self):

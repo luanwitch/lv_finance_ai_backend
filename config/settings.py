@@ -93,11 +93,15 @@ WSGI_APPLICATION = "config.wsgi.application"
 #
 # - Desenvolvimento manual (navegador, celular, demonstrações):
 #     -> dev.sqlite3 (PERSISTENTE - NUNCA apagar automaticamente)
+#        O .env local NÃO contém DATABASE_URL (vazio); qualquer comando
+#        local cai neste SQLite isolado. O accounts.W001 avisa se alguém
+#        definir uma DATABASE_URL remota com DJANGO_DEBUG=True.
 # - Testes automatizados (`manage.py test`):
 #     -> SQLite EM MEMÓRIA, sempre. Nunca toca dev.sqlite3 e nunca
 #        cria bancos de teste no PostgreSQL/Neon, mesmo que DATABASE_URL
-#        esteja definida no ambiente ou no .env.
-# - Produção (Render etc.): DATABASE_URL apontando para o Postgres.
+#        esteja definida no ambiente.
+# - Produção (Render etc.): DATABASE_URL apontando para o Postgres/Neon,
+#     configurada como env var do painel do Render (nunca no .env).
 # ---------------------------------------------------------------------------
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -216,6 +220,40 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # ---------------------------------------------------------------------------
+# Email
+# ---------------------------------------------------------------------------
+
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend",
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    "LV Finance AI <no-reply@lvfinance.com>",
+)
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+EMAIL_VERIFICATION_TOKEN_LIFETIME_HOURS = int(
+    os.getenv("EMAIL_VERIFICATION_TOKEN_LIFETIME_HOURS", "24")
+)
+EMAIL_VERIFICATION_TOKEN_LIFETIME = timedelta(
+    hours=EMAIL_VERIFICATION_TOKEN_LIFETIME_HOURS
+)
+
+PASSWORD_RESET_TOKEN_LIFETIME_HOURS = int(
+    os.getenv("PASSWORD_RESET_TOKEN_LIFETIME_HOURS", "1")
+)
+PASSWORD_RESET_TOKEN_LIFETIME = timedelta(
+    hours=PASSWORD_RESET_TOKEN_LIFETIME_HOURS
+)
+
+# ---------------------------------------------------------------------------
 # REST Framework
 # ---------------------------------------------------------------------------
 
@@ -229,6 +267,12 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+    "DEFAULT_THROTTLE_RATES": {
+        "register": "10/hour",
+        "resend_verification": "5/hour",
+        "password_reset": "5/hour",
+        "ai_chat": "20/minute",
+    },
     "EXCEPTION_HANDLER": "config.exceptions.custom_exception_handler",
 }
 

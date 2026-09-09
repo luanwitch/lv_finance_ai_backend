@@ -14,7 +14,8 @@
 # ---------------------------------------------------------------------------
 
 param(
-    [int]$Port = 8010
+    [int]$Port = 8010,
+    [switch]$CheckOnly
 )
 
 $ErrorActionPreference = "Stop"

@@ -1,0 +1,13 @@
+Confirme seu e-mail - LV Finance AI
+
+{% if user.first_name %}Olá, {{ user.first_name }}!{% else %}Olá!{% endif %}
+
+Sua conta no LV Finance AI foi criada com sucesso. Para começar a usar,
+confirme o seu endereço de e-mail clicando no link abaixo:
+
+{{ verify_url }}
+
+Este link é válido por {{ link_validity_hours }} horas. Após esse período,
+será necessário solicitar um novo link.
+
+Se você não realizou este cadastro, ignore este e-mail. Nenhuma ação é necessária.

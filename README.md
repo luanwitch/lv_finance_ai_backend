@@ -18,12 +18,13 @@ API do app LV Finance: transações, metas, gamificação, insights e assistente
    (produção: Postgres; dev manual: `sqlite:///dev.sqlite3`).
 3. Sem nenhuma das anteriores → fallback local: `dev.sqlite3` na raiz do projeto.
 
-> **ATENÇÃO:** o `.env` deste projeto contém uma `DATABASE_URL` apontando para o
-> **Postgres de produção (Neon)**. Por isso, para subir um servidor manual use
-> SEMPRE o `start_dev.ps1`, que sobrescreve a variável com
-> `DATABASE_URL=sqlite:///dev.sqlite3` e **bloqueia a inicialização** se o banco
-> efetivo não for o `dev.sqlite3`. Nunca rode `manage.py runserver` "cru" sem
-> garantir essa variável.
+> **SEPARAÇÃO DEV/PRODUÇÃO:** o `.env` local **não** contém URL de produção —
+> `DATABASE_URL` fica **vazio**, então `manage.py runserver`, `migrate`, `shell`
+> e demais comandos usam o **`dev.sqlite3`** isolado. A URL do Neon é definida
+> apenas como variável de ambiente no painel do **Render** (`DATABASE_URL`),
+> nunca no `.env`. O `start_dev.ps1` ainda garante (e bloqueia) que o banco
+> efetivo seja o `dev.sqlite3` (`accounts.W001` avisa se alguém setar uma URL
+> remota com `DJANGO_DEBUG=True`).
 
 ## Servidor de desenvolvimento manual
 
