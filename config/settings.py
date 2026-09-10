@@ -236,6 +236,11 @@ DEFAULT_FROM_EMAIL = os.getenv(
     "LV Finance AI <no-reply@lvfinance.com>",
 )
 
+# Envio transacional via API HTTP (Resend). Se vazio, o backend Django
+# configurado acima (SMTP/console/locmem) continua sendo usado, preservando
+# o desenvolvimento local e a suite de testes.
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 EMAIL_VERIFICATION_TOKEN_LIFETIME_HOURS = int(

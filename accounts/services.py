@@ -3,10 +3,10 @@ import logging
 import secrets
 
 from django.conf import settings
-from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils import timezone
 
+from .email_service import send_email
 from .models import EmailVerificationToken, PasswordResetToken
 
 logger = logging.getLogger(__name__)
@@ -79,13 +79,11 @@ def send_verification_email(user, raw_token):
     message = render_to_string("accounts/emails/verification_email.txt", context)
     html_message = render_to_string("accounts/emails/verification_email.html", context)
 
-    send_mail(
-        subject,
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
+    send_email(
+        subject=subject,
+        message=message,
         html_message=html_message,
-        fail_silently=False,
+        recipient_list=[user.email],
     )
 
 
@@ -155,11 +153,9 @@ def send_password_reset_email(user, raw_token):
     message = render_to_string("accounts/emails/password_reset_email.txt", context)
     html_message = render_to_string("accounts/emails/password_reset_email.html", context)
 
-    send_mail(
-        subject,
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
+    send_email(
+        subject=subject,
+        message=message,
         html_message=html_message,
-        fail_silently=False,
+        recipient_list=[user.email],
     )

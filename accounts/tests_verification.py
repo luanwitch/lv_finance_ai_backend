@@ -81,7 +81,10 @@ class RegisterEmailVerificationTests(TestCase):
     def test_register_reverts_user_on_email_failure(self):
         from unittest.mock import patch
 
-        with patch("accounts.services.send_mail", side_effect=Exception("SMTP down")):
+        with patch(
+            "accounts.services.send_email",
+            side_effect=Exception("e-mail service down"),
+        ):
             response = self.client.post(REGISTER_URL, VALID_DATA)
 
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)

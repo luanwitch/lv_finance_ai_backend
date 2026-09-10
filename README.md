@@ -57,6 +57,19 @@ Todos os arquivos `*.sqlite3` estão no `.gitignore` — bancos locais não vão
 - `gamification/profile/`, `gamification/achievements/`, `gamification/challenges/` (somente leitura)
 - `health/` (checa conexão com o banco ativo)
 
+## E-mail transacional (verificação e reset de senha)
+
+O envio usa uma camada única (`accounts/email_service.py`):
+
+- **Produção:** se `RESEND_API_KEY` estiver definida (painel do Render), o
+  e-mail é enviado via API HTTP do Resend (HTTPS) — o Render bloqueia SMTP
+  de saída. O domínio em `DEFAULT_FROM_EMAIL` precisa estar verificado no
+  Resend.
+- **Dev/testes:** sem `RESEND_API_KEY`, segue usando o backend Django
+  configurado (`EMAIL_BACKEND`) — console, SMTP ou o locmem da suíte.
+- `FRONTEND_URL` em produção deve ser `https://lv-finance-ia.vercel.app`
+  para que os links de verificação/reset apontem para o frontend real.
+
 ## Validação de qualidade
 
 ### Backend (Django)

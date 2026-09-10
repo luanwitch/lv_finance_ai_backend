@@ -201,6 +201,11 @@ class ResendVerificationView(APIView):
                 logger.exception(
                     "Falha ao gerar/enviar novo token de verificacao para %s", email
                 )
+                return Response(
+                    {"detail": "Nao foi possivel enviar o e-mail de confirmacao. "
+                     "Tente novamente em alguns instantes."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
         return Response(
             {
@@ -256,6 +261,11 @@ class RequestPasswordResetView(APIView):
             except Exception:
                 logger.exception(
                     "Falha ao gerar/enviar token de redefinicao de senha para %s", email
+                )
+                return Response(
+                    {"detail": "Nao foi possivel enviar o e-mail de redefinicao "
+                     "de senha. Tente novamente em alguns instantes."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
 
         return Response(
